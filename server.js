@@ -92,7 +92,7 @@ app.get('/status/:uuid', async (req, res) => {
 // POST /ai/chat  { messages: [{role, content}], model?, temperature? }
 app.post('/ai/chat', async (req, res) => {
   try {
-    const { messages, model = 'llama3-8b-8192', temperature = 0.7 } = req.body;
+    const { messages, model = 'llama-3.3-70b-versatile', temperature = 0.7 } = req.body;
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ status: 'error', message: 'messages array required' });
     }
