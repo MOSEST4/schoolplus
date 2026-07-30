@@ -2,8 +2,9 @@ services:
   - type: web
     name: schoolplus
     runtime: node
+    rootDir: server
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server.js
     envVars:
       - key: PORT
         value: 3000
