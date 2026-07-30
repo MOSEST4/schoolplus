@@ -88,6 +88,33 @@ app.get('/status/:uuid', async (req, res) => {
   }
 });
 
+// ── Groq AI: Chat completion ───────────────────────────────────────────────
+// POST /ai/chat  { messages: [{role, content}], model?, temperature? }
+app.post('/ai/chat', async (req, res) => {
+  try {
+    const { messages, model = 'llama3-8b-8192', temperature = 0.7 } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ status: 'error', message: 'messages array required' });
+    }
+    const r = await axios.post(
+      'https://api.groq.com/openai/v1/chat/completions',
+      { model, temperature, messages },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+          'Content-Type':  'application/json',
+        },
+        timeout: 30000,
+      }
+    );
+    const text = r.data?.choices?.[0]?.message?.content ?? '';
+    res.json({ status: 'ok', content: text });
+  } catch (e) {
+    console.error('[AI]', e.message, e.response?.data);
+    res.status(500).json({ status: 'error', message: e.response?.data?.error?.message ?? e.message });
+  }
+});
+
 // ── Start ──────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`SchoolPlus Proxy v1.0.0 running on port ${PORT}`));
